@@ -1,0 +1,13 @@
+name: CollectorsItems
+version: @version@
+main: maowcraft.collectorsitems.CollectorsItems
+api-version: 1.13
+prefix: Collector's Items
+authors: [Maowcraft]
+description: Combine 500 of a single item to create a Collector's variant of that item, inspired by TF2 collector's items.
+
+commands:
+  combine:
+    permission: collectorsitems.combine.use
+    description: Combine 500 items to make 1 Collector's Item.
+    usage: "Usage: /<command>"
