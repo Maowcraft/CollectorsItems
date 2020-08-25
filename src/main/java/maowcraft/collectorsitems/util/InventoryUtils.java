@@ -36,13 +36,12 @@ public class InventoryUtils {
     public static void makeStackCollectors(ItemStack itemStack, ItemMeta meta, Player player, String name, String crafter, Location dropLocation) {
         PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
         dataContainer.set(PersistentDataKeys.COLLECTORS, PersistentDataType.INTEGER, 1);
-        dataContainer.set(PersistentDataKeys.CRAFTER, PersistentDataType.STRING, player.getDisplayName());
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6Collector's " + name + "&r"));
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',  "&6Collector's " + name + "&r"));
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Crafted by " + crafter);
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
-        meta.addEnchant(Enchantment.KNOCKBACK, 1, true);
+        meta.addEnchant(Enchantment.DURABILITY, 1, true);
         meta.setUnbreakable(true);
         itemStack.setItemMeta(meta);
         if (dropLocation == null) {

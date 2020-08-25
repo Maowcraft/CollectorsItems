@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CommandCombine implements CommandExecutor {
@@ -25,44 +24,44 @@ public class CommandCombine implements CommandExecutor {
             if (stack != null) {
                 Material material = stack.getType();
                 List<ItemStack> items = InventoryUtils.getAllItems(inventory);
-                RequiredAmount requiredAmount = RequiredAmount.SIXTY_FOUR_STACK;
-                boolean gotRequiredAmount = false;
-                int totalFound = 0;
-                List<ItemStack> toDelete = new ArrayList<>();
+                RequiredAmount requiredAmount;
+                switch(stack.getMaxStackSize()) {
+                    case 1:
+                        requiredAmount = RequiredAmount.SINGLE_STACK;
+                        break;
+                    case 16:
+                        requiredAmount = RequiredAmount.SIXTEEN_STACK;
+                        break;
+                    default:
+                        requiredAmount = RequiredAmount.SIXTY_FOUR_STACK;
+                        break;
+                }
+                int amountFound = 0;
                 for (ItemStack item : items) {
-                    if (!gotRequiredAmount) {
-                        gotRequiredAmount = true;
-                        switch(item.getMaxStackSize()) {
-                            case 1:
-                                requiredAmount = RequiredAmount.SINGLE_STACK;
-                                break;
-                            case 16:
-                                requiredAmount = RequiredAmount.SIXTEEN_STACK;
-                                break;
-                            case 64:
-                                requiredAmount = RequiredAmount.SIXTY_FOUR_STACK;
-                                break;
-                        }
-                    }
-                    if (item.getType().equals(material)) {
-                        if (totalFound < requiredAmount.amount) {
-                            totalFound += item.getAmount();
-                            toDelete.add(item);
-                        }
+                    if (item.getType() == material) {
+                        amountFound += item.getAmount();
+                        if (amountFound >= requiredAmount.amount) break;
                     }
                 }
-                if (totalFound >= requiredAmount.amount) {
-                    for (ItemStack item1 : toDelete) {
-                        inventory.removeItem(item1);
+                int extraItemAmount = (amountFound - requiredAmount.amount);
+                if (extraItemAmount > 0) {
+                    amountFound -= extraItemAmount;
+                }
+                if (amountFound >= requiredAmount.amount) {
+                    int amountLeft = amountFound;
+                    while (amountLeft > stack.getMaxStackSize()) {
+                        inventory.removeItem(new ItemStack(stack.getType(), stack.getMaxStackSize()));
+                        amountLeft -= stack.getMaxStackSize();
                     }
-                    ItemStack itemStack = new ItemStack(material);
-                    ItemMeta meta = itemStack.getItemMeta();
+                    inventory.removeItem(new ItemStack(stack.getType(), amountLeft));
+                    ItemStack stack1 = new ItemStack(material);
+                    ItemMeta meta = stack1.getItemMeta();
                     assert meta != null;
-                    String name = InventoryUtils.getNameFromType(itemStack.getType());
-                    InventoryUtils.makeStackCollectors(itemStack, meta, player, name, player.getDisplayName(), null);
+                    String name = InventoryUtils.getNameFromType(stack1.getType());
+                    InventoryUtils.makeStackCollectors(stack1, meta, player, name, player.getDisplayName(), null);
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e[Collector's Items]&r Crafted a &6Collector's " + name + "&r."));
                 } else {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e[Collector's Items]&r Missing " + (requiredAmount.amount - totalFound) + " required items."));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e[Collector's Items]&r Missing " + (requiredAmount.amount - amountFound) + " required items."));
                 }
             } else {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e[Collector's Items]&r Not holding an item."));
