@@ -23,22 +23,6 @@ public final class CollectorsItems extends JavaPlugin {
 
         Objects.requireNonNull(this.getCommand("combine")).setExecutor(new CommandCombine());
 
-        Objects.requireNonNull(this.getCommand("discord")).setExecutor((sender, command, label, args) -> {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&lJoin the Woolly Development Discord server for support and updates on my plugins:\n&rhttps://discord.gg/RbNwjJy"));
-            }
-            return true;
-        });
-
-        Objects.requireNonNull(this.getCommand("patreon")).setExecutor((sender, command, label, args) -> {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&lSupport the developers at Woolly Development by donating to their Patreon:\n&rhttps://www.patreon.com/woollydevelopment"));
-            }
-            return true;
-        });
-
         this.getConfig().options().copyDefaults(true);
         saveDefaultConfig();
 
